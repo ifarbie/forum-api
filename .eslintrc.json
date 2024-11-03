@@ -1,8 +1,23 @@
 {
-  "env": {
-    "commonjs": true,
-    "es2021": true,
-    "node": true,
-    "jest": true
-  }
+    "env": {
+        "commonjs": true,
+        "es2021": true,
+        "node": true,
+        "jest": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+        "no-underscore-dangle": "off",
+        "linebreak-style": "off",
+        "camelcase": "off",
+        "object-curly-newline": "off",
+        "class-methods-use-this": "off",
+        "spaced-comment": "off",
+        "comma-dangle": "off"
+    }
 }

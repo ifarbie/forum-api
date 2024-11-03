@@ -43,13 +43,15 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Action
       const addedThread = await threadRepositoryPostgres.addThread(newThread, 'user-123');
+
       // Assert
-      expect(addedThread).toStrictEqual(new AddedThread({
-        id: 'thread-123',
-        user_id: 'user-123',
-        title: 'dicoding',
-        body: 'Dicoding Indonesia',
-      }));
+      expect(addedThread).toStrictEqual(
+        new AddedThread({
+          id: 'thread-123',
+          owner: 'user-123',
+          title: 'dicoding',
+        }),
+      );
     });
   });
 

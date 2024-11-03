@@ -2,6 +2,7 @@
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const ThreadsTableTestHelper = {
+  // eslint-disable-next-line object-curly-newline
   async addThread({ id = 'thread-123', user_id = 'user-123', title = 'dicoding', body = 'dicoding indonesia' }) {
     const query = {
       text: 'INSERT INTO threads VALUES($1, $2, $3, $4)',

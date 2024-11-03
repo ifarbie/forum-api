@@ -1,4 +1,5 @@
-const NewThread = require("../../../Domains/threads/entities/NewThread");
+/* eslint-disable no-return-await */
+const NewThread = require('../../../Domains/threads/entities/NewThread');
 
 class AddThreadUseCase {
   constructor({ threadRepository }) {
