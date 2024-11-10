@@ -27,9 +27,27 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     });
   }
 
+  async verifyThreadById(threadId) {
+    const query = {
+      text: 'SELECT id FROM threads WHERE id = $1',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('thread not found');
+    }
+  }
+
   async getThreadById(threadId) {
     const query = {
-      text: 'SELECT * FROM threads WHERE id = $1',
+      text: `
+        SELECT 
+          threads.id, username, title, body, created_at 
+        FROM threads 
+        JOIN users on threads.user_id = users.id 
+        WHERE threads.id = $1`,
       values: [threadId],
     };
 
@@ -39,7 +57,13 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       throw new NotFoundError('thread not found');
     }
 
-    return result.rows[0];
+    return {
+      id: result.rows[0].id,
+      username: result.rows[0].username,
+      title: result.rows[0].title,
+      body: result.rows[0].body,
+      date: result.rows[0].created_at,
+    };
   }
 }
 

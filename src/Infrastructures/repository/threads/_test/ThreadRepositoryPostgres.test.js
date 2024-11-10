@@ -50,32 +50,39 @@ describe('ThreadRepositoryPostgres', () => {
           id: 'thread-123',
           owner: 'user-123',
           title: 'dicoding',
-        }),
+        })
       );
     });
   });
 
-  describe('getThreadById function', () => {
+  describe('verifyThreadById function', () => {
     it('should throw NotFoundError when thread not found', async () => {
       // Arrange
       await ThreadsTableTestHelper.addThread({ id: 'thread-123', user_id: 'user-123', title: 'dicoding', body: 'Dicoding Indonesia' });
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.getThreadById('thread-321')).rejects.toThrowError(NotFoundError);
+      await expect(threadRepositoryPostgres.verifyThreadById('thread-321')).rejects.toThrowError(NotFoundError);
     });
+  });
 
-    it('should get thread correctly', async () => {
+  describe('getThreadById function', () => {
+    it('should return thread correctly', async () => {
       // Arrange
-      await ThreadsTableTestHelper.addThread({ id: 'thread-123', user_id: 'user-123', title: 'title test', body: 'body test' });
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-123',
+        title: 'Title thread',
+        body: 'Body thread',
+        owner: 'user-123',
+      });
+
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
-
-      // Action
       const thread = await threadRepositoryPostgres.getThreadById('thread-123');
-
-      // Assert
-      await expect(thread.id).toEqual('thread-123');
-      await expect(thread.title).toEqual('title test');
+      expect(thread.id).toEqual('thread-123');
+      expect(thread.title).toEqual('Title thread');
+      expect(thread.body).toEqual('Body thread');
+      expect(thread.date).toBeDefined();
+      expect(thread.username).toEqual('dicoding');
     });
   });
 });

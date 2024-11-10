@@ -3,10 +3,10 @@ const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const ThreadsTableTestHelper = {
   // eslint-disable-next-line object-curly-newline
-  async addThread({ id = 'thread-123', user_id = 'user-123', title = 'dicoding', body = 'dicoding indonesia' }) {
+  async addThread({ id = 'thread-123', user_id = 'user-123', title = 'dicoding', body = 'dicoding indonesia', currentDate = new Date().toISOString() }) {
     const query = {
-      text: 'INSERT INTO threads VALUES($1, $2, $3, $4)',
-      values: [id, user_id, title, body],
+      text: 'INSERT INTO threads VALUES($1, $2, $3, $4, $5)',
+      values: [id, user_id, title, body, currentDate],
     };
 
     await pool.query(query);

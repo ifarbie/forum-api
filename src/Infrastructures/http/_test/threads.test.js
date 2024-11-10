@@ -100,13 +100,14 @@ describe('/threads endpoint', () => {
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-        }
+        },
       });
 
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
     });
 
     it('should response 400 when request payload not meet data type specification', async () => {
@@ -147,13 +148,14 @@ describe('/threads endpoint', () => {
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-        }
+        },
       });
 
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(400);
       expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
     });
 
     it('should response 400 when title more than 100 character', async () => {
@@ -167,8 +169,8 @@ describe('/threads endpoint', () => {
         body: 'Dicoding Indonesia',
       };
 
-       // Login
-       await server.inject({
+      // Login
+      await server.inject({
         method: 'POST',
         url: '/users',
         payload: {
@@ -196,7 +198,7 @@ describe('/threads endpoint', () => {
         payload: requestPayload,
         headers: {
           Authorization: `Bearer ${accessToken}`,
-        }
+        },
       });
 
       // Assert
