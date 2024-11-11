@@ -67,6 +67,19 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('getThreadById function', () => {
+    it('should throw NotFoundError when thread not found', async () => {
+      // Arrange
+      await ThreadsTableTestHelper.addThread({
+        id: 'thread-123',
+        title: 'Title thread',
+        body: 'Body thread',
+        owner: 'user-123',
+      });
+
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+      await expect(threadRepositoryPostgres.getThreadById('thread-321')).rejects.toThrowError(NotFoundError);
+    });
+
     it('should return thread correctly', async () => {
       // Arrange
       await ThreadsTableTestHelper.addThread({

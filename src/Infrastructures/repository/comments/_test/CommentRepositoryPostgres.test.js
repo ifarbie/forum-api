@@ -114,4 +114,17 @@ describe('CommentRepositoryPostgres', () => {
       await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError();
     });
   });
+
+  describe('getAllCommentsByThreadId function', () => {
+    it('should get all comments by thread id correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({ id: 'comment-125', user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment 1' });
+      await CommentsTableTestHelper.addComment({ id: 'comment-124', user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment 2' });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(commentRepositoryPostgres.getAllCommentsByThreadId('thread-123')).resolves.not.toThrowError();
+      await expect(commentRepositoryPostgres.getAllCommentsByThreadId('thread-123')).resolves.toHaveLength(2);
+    });
+  });
 });

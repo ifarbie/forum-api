@@ -1,6 +1,7 @@
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AddedComment = require('../../../Domains/comments/entities/AddedComment');
+const GetComment = require('../../../Domains/comments/entities/GetComment');
 
 class CommentRepositoryPostgres {
   constructor(pool, idGenerator) {
@@ -59,6 +60,26 @@ class CommentRepositoryPostgres {
     if (!result.rowCount) {
       throw new AuthorizationError('you are not allowed to access this resource');
     }
+  }
+
+  async getAllCommentsByThreadId(threadId) {
+    const query = {
+      text: `SELECT comments.*, users.username 
+        FROM comments 
+        JOIN users ON comments.user_id = users.id 
+        WHERE comments.thread_id = $1 ORDER BY created_at ASC`,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows.map((comment) => new GetComment({
+      id: comment.id,
+      username: comment.username,
+      date: comment.created_at,
+      content: comment.content,
+      is_delete: comment.is_delete,
+    }));
   }
 }
 
