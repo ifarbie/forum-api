@@ -1,3 +1,5 @@
+/* eslint-disable function-paren-newline */
+/* eslint-disable implicit-arrow-linebreak */
 const AddedThread = require('../../../../Domains/threads/entities/AddedThread');
 const ThreadRepository = require('../../../../Domains/threads/ThreadRepository');
 const AddThreadUseCase = require('../AddThreadUseCase');
@@ -22,8 +24,15 @@ describe('AddThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
 
     /** mocking needed function */
-    // eslint-disable-next-line max-len
-    mockThreadRepository.addThread = jest.fn().mockImplementation(() => Promise.resolve(mockAddedThread));
+    mockThreadRepository.addThread = jest.fn().mockImplementation(() =>
+      Promise.resolve(
+        new AddedThread({
+          id: 'thread-123',
+          owner: useCaseCredential.id,
+          title: useCasePayload.title,
+        })
+      )
+    );
 
     /** creating use case instance */
     const addThreadUseCase = new AddThreadUseCase({
@@ -34,12 +43,7 @@ describe('AddThreadUseCase', () => {
     const addedThread = await addThreadUseCase.execute(useCasePayload, useCaseCredential);
 
     // Assert
-    expect(addedThread).toStrictEqual(
-      new AddedThread({
-        id: 'thread-123',
-        owner: useCaseCredential.id,
-        title: useCasePayload.title,
-      }),
-    );
+    expect(addedThread).toStrictEqual(mockAddedThread);
+    expect(mockThreadRepository.addThread).toBeCalledWith(useCasePayload, useCaseCredential);
   });
 });

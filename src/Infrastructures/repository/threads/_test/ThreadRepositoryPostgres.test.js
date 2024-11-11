@@ -26,13 +26,17 @@ describe('ThreadRepositoryPostgres', () => {
       const newThread = new NewThread({ title: 'dicoding', body: 'Dicoding Indonesia' });
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+      const expectedThread = new AddedThread({
+        id: 'thread-123',
+        owner: 'user-123',
+        title: 'dicoding',
+      });
 
       // Action
-      await threadRepositoryPostgres.addThread(newThread, 'user-123');
+      const addedThread = await threadRepositoryPostgres.addThread(newThread, 'user-123');
 
       // Assert
-      const thread = await ThreadsTableTestHelper.findThreadById('thread-123');
-      expect(thread).toHaveLength(1);
+      expect(addedThread).toStrictEqual(expectedThread);
     });
 
     it('should return added thread correctly', async () => {
@@ -63,6 +67,15 @@ describe('ThreadRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(threadRepositoryPostgres.verifyThreadById('thread-321')).rejects.toThrowError(NotFoundError);
+    });
+
+    it('should verify thread by id correctly', async () => {
+      // Arrange
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123', user_id: 'user-123', title: 'dicoding', body: 'Dicoding Indonesia' });
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.verifyThreadById('thread-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 

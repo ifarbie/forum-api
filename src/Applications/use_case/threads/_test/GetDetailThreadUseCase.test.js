@@ -75,16 +75,10 @@ describe('GetDetailThreadUseCase', () => {
 
     const thread = await getDetailThreadUseCase.execute(threadId);
 
+    expect(thread).toEqual(expectedDetailThread);
+
     expect(mockThreadRepository.verifyThreadById).toBeCalledWith(threadId);
     expect(mockThreadRepository.getThreadById).toBeCalledWith(threadId);
     expect(mockCommentRepository.getAllCommentsByThreadId).toBeCalledWith(threadId);
-
-    expect(thread.id).toEqual(expectedDetailThread.id);
-    expect(thread.username).toEqual(expectedDetailThread.username);
-    expect(thread.title).toEqual(expectedDetailThread.title);
-    expect(thread.body).toEqual(expectedDetailThread.body);
-    expect(thread.date).toBeDefined();
-    expect(thread.comments).toHaveLength(2);
-    expect(thread).toEqual(expectedDetailThread);
   });
 });

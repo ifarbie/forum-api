@@ -33,13 +33,17 @@ describe('CommentRepositoryPostgres', () => {
       };
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      const expectedComment = new AddedComment({
+        id: 'comment-123',
+        owner: 'user-123',
+        content: 'ini comment',
+      });
 
       // Action
-      await commentRepositoryPostgres.addComment(newComment, 'thread-123', 'user-123');
+      const addedComment = await commentRepositoryPostgres.addComment(newComment, 'thread-123', 'user-123');
 
       // Assert
-      const comments = await CommentsTableTestHelper.findCommentById('comment-123');
-      expect(comments).toHaveLength(1);
+      expect(addedComment).toStrictEqual(expectedComment);
     });
 
     it('should return added comment correctly', async () => {
@@ -72,6 +76,15 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action & Assert
       await expect(commentRepositoryPostgres.verifyCommentById('comment-321', 'thread-123', 'user-123')).rejects.toThrowError(NotFoundError);
+    });
+
+    it('should verify comment by id correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({ id: 'comment-123', user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment' });
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+
+      // Action & Assert
+      await expect(commentRepositoryPostgres.verifyCommentById('comment-123', 'thread-123', 'user-123')).resolves.not.toThrowError(NotFoundError);
     });
   });
 
@@ -111,20 +124,34 @@ describe('CommentRepositoryPostgres', () => {
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
 
       // Action & Assert
-      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError();
+      await expect(commentRepositoryPostgres.verifyCommentOwner('comment-123', 'user-123')).resolves.not.toThrowError(AuthorizationError);
     });
   });
 
   describe('getAllCommentsByThreadId function', () => {
     it('should get all comments by thread id correctly', async () => {
       // Arrange
-      await CommentsTableTestHelper.addComment({ id: 'comment-125', user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment 1' });
-      await CommentsTableTestHelper.addComment({ id: 'comment-124', user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment 2' });
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+      const commentId1 = 'comment-125';
+      const currentDate = new Date().toISOString();
 
-      // Action & Assert
+      const expectedComments = [
+        {
+          id: 'comment-125',
+          username: 'dicoding',
+          content: 'ini comment 1',
+          date: currentDate,
+          is_delete: false,
+        },
+      ];
+      await CommentsTableTestHelper.addComment({ id: commentId1, user_id: 'user-123', thread_id: 'thread-123', content: 'ini comment 1', currentDate });
+
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
+      const comments = await commentRepositoryPostgres.getAllCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(comments).toEqual(expectedComments);
       await expect(commentRepositoryPostgres.getAllCommentsByThreadId('thread-123')).resolves.not.toThrowError();
-      await expect(commentRepositoryPostgres.getAllCommentsByThreadId('thread-123')).resolves.toHaveLength(2);
+      await expect(commentRepositoryPostgres.getAllCommentsByThreadId('thread-123')).resolves.toHaveLength(1);
     });
   });
 });

@@ -1,9 +1,8 @@
 /* eslint-disable max-len */
 class DeleteCommentUseCase {
-  constructor({ commentRepository, threadRepository, userRepository }) {
+  constructor({ commentRepository, threadRepository }) {
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
-    this._userRepository = userRepository;
   }
 
   async execute(useCaseThreadId, useCaseCommentId, useCaseCredential) {
